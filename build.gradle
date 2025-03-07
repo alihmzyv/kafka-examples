@@ -11,6 +11,10 @@ repositories {
 
 dependencies {
     implementation 'org.apache.kafka:kafka_2.13:3.9.0'
+    // https://mvnrepository.com/artifact/ch.qos.logback/logback-classic
+    implementation 'ch.qos.logback:logback-classic:1.5.16'
+
+    implementation 'org.slf4j:slf4j-api:2.1.0-alpha1'
     testImplementation platform('org.junit:junit-bom:5.10.0')
     testImplementation 'org.junit.jupiter:junit-jupiter'
 }

@@ -1,4 +1,4 @@
-package com.alihmzyv;
+package com.alihmzyv.chapter3;
 
 
 import org.apache.kafka.clients.admin.Admin;

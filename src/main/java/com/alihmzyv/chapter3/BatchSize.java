@@ -1,4 +1,4 @@
-package com.alihmzyv;
+package com.alihmzyv.chapter3;
 
 
 import java.util.List;
@@ -10,8 +10,10 @@ import org.apache.kafka.clients.admin.NewTopic;
 import org.apache.kafka.clients.producer.KafkaProducer;
 import org.apache.kafka.clients.producer.ProducerRecord;
 
-
-public class BufferMemory {
+//when batch size is reached for a partition, the other partitions can be sent as well if they are also in the same broker.
+//if not in same broker, then only the partition with the batch size reached is sent
+//the same thing when the batch size is not reached, but linger.ms is reached
+public class BatchSize {
     static KafkaProducer<String, String> producer;
     static Admin admin;
 
@@ -21,17 +23,16 @@ public class BufferMemory {
         kafkaProps.put("key.serializer", "org.apache.kafka.common.serialization.StringSerializer");
         kafkaProps.put("value.serializer",
                 "org.apache.kafka.common.serialization.StringSerializer");
-        kafkaProps.put("batch.size", 100);
-        kafkaProps.put("linger.ms", 180_000);
-        kafkaProps.put("buffer.memory", 1000);
-        kafkaProps.put("max.block.ms", 30_000);
+//        kafkaProps.put("batch.size", 600);
+        kafkaProps.put("linger.ms", 30_000);
 
 
         admin = Admin.create(kafkaProps);
         producer = new KafkaProducer<>(kafkaProps);
 
         try {
-            createTopicIfNotPresent("CustomerCountry", 5, (short) 1);
+            createTopicIfNotPresent("CustomerCountry", 2, (short) 1);
+            System.out.println("Created topics");
         } catch (ExecutionException e) {
             throw new RuntimeException(e);
         } catch (InterruptedException e) {
@@ -40,10 +41,11 @@ public class BufferMemory {
     }
 
     public static void main(String[] args) throws InterruptedException, ExecutionException {
-        IntStream.rangeClosed(1, 100)
+        IntStream.rangeClosed(1, 20)
                 .forEach(num -> {
+                    int partition = num > 3 ? 0 : 1;
                     ProducerRecord<String, String> record =
-                            new ProducerRecord<>("CustomerCountry", 1, "Precision Products",
+                            new ProducerRecord<>("CustomerCountry", partition, "Precision Products",
                                     "jkfndjksfjdsfhjdsbhjfbdshjbfjhdsfjhsbdfhjsbfjhbsdhjfjhsdb fjhdsb");
                     try {
                         System.out.println("Calling send for ith time: " + num);
@@ -56,7 +58,7 @@ public class BufferMemory {
                             }
                         });
                         System.out.println("Called send for ith time: " + num);
-                        Thread.sleep(5_000);
+                        Thread.sleep(num * 500L);
                     } catch (Exception e) {
                         System.out.println("Exception occurred while calling send " + e.getMessage());
                         e.printStackTrace();

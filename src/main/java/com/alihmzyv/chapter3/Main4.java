@@ -1,10 +1,9 @@
-package com.alihmzyv;
+package com.alihmzyv.chapter3;
 
-
-import org.apache.kafka.clients.producer.KafkaProducer;
-import org.apache.kafka.clients.producer.ProducerRecord;
 
 import java.util.Properties;
+import org.apache.kafka.clients.producer.KafkaProducer;
+import org.apache.kafka.clients.producer.ProducerRecord;
 
 //when synchronous, broker not available (8080), after max.block.ms, it will throw org.apache.kafka.common.errors.TimeoutException
 public class Main4 {
